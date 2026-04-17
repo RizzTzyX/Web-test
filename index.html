@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excellent | Digital Identity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --accent: #3b82f6; /* Biru Excellent */
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text);
+            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* --- HEADER --- */
+        header { text-align: center; padding: 60px 0; }
+        .logo { 
+            font-family: 'Space Grotesk', sans-serif; font-size: clamp(3rem, 8vw, 6rem); 
+            font-weight: 800; letter-spacing: -4px;
+            background: linear-gradient(to bottom, #fff, #3b82f6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* --- BENTO GRID SYSTEM --- */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: minmax(180px, auto);
+            gap: 15px;
+        }
+
+        .bento-item {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 25px;
+            transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .bento-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* Span Rules (Ukuran Kotak ala Link Contoh) */
+        .large { grid-column: span 2; grid-row: span 2; }
+        .wide { grid-column: span 2; }
+        .tall { grid-row: span 2; }
+
+        /* --- INTERACTIVE NAME (RAINBOW) --- */
+        .rainbow-zone {
+            display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px;
+        }
+        .name-chip {
+            padding: 8px 16px; border-radius: 50px; font-size: 13px; font-weight: 600;
+            border: 1px solid var(--border); cursor: pointer; transition: 0.3s;
+        }
+        .name-chip:hover { transform: translateY(-5px); border-color: white; }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px); z-index: 2000; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #111; padding: 40px; border-radius: 30px; border: 1px solid var(--accent);
+            width: 90%; max-width: 400px; text-align: center;
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .bento-grid { grid-template-columns: repeat(2, 1fr); }
+            .large, .wide { grid-column: span 2; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">EXCELLENT.</div>
+            <p style="color: #64748b; font-weight: 600;">CLASS PROJECT • VERSION 3.0</p>
+        </header>
+
+        <div class="bento-grid">
+            <div class="bento-item large">
+                <div>
+                    <i data-lucide="users" color="#3b82f6"></i>
+                    <h2 style="margin-top: 20px;">The Core</h2>
+                </div>
+                <p style="color: #94a3b8; font-size: 14px;">Wadah kreatifitas siswa Excellent dalam satu dashboard digital.</p>
+            </div>
+
+            <div class="bento-item">
+                <i data-lucide="calendar"></i>
+                <h3>Jadwal</h3>
+                <p style="font-size: 12px; color: #64748b;">Cek pelajaran & piket harian.</p>
+            </div>
+
+            <div class="bento-item tall" style="background: linear-gradient(45deg, #1e3a8a, transparent);">
+                <i data-lucide="shield-check"></i>
+                <h3>Identity</h3>
+                <div id="smallGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px;">
+                    </div>
+            </div>
+
+            <div class="bento-item wide">
+                <h3>Our Members</h3>
+                <div class="rainbow-zone" id="nameCloud"></div>
+            </div>
+
+            <div class="bento-item">
+                <i data-lucide="camera"></i>
+                <h3>Gallery</h3>
+            </div>
+        </div>
+    </div>
+
+    <div id="idModal" class="modal" onclick="this.style.display='none'">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div style="width: 80px; height: 80px; background: #222; border-radius: 20px; margin: 0 auto 20px;"></div>
+            <h2 id="m-name">Nama</h2>
+            <p id="m-info" style="margin-top: 15px; color: #94a3b8; line-height: 1.8;"></p>
+        </div>
+    </div>
+
+    <script>
+        const members = [
+            { name: "Andi Wijaya", nick: "Andi", age: 17, birth: "12 Mar 2009", role: "Ketua" },
+            { name: "Budi Santoso", nick: "Budi", age: 17, birth: "05 Jan 2009", role: "Sekretaris" },
+            { name: "Citra Lestari", nick: "Citra", age: 16, birth: "21 Okt 2009", role: "Bendahara" },
+            { name: "Dedi Kurniawan", nick: "Dedi", age: 17, birth: "15 Apr 2009", role: "Anggota" }
+        ];
+
+        // Render Nama Rainbow
+        const cloud = document.getElementById('nameCloud');
+        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+        members.forEach(m => {
+            const chip = document.createElement('div');
+            chip.className = 'name-chip';
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            chip.style.color = color;
+            chip.style.borderColor = color + '44';
+            chip.innerText = m.name;
+
+            chip.onclick = () => {
+                document.getElementById('m-name').innerText = m.name;
+                document.getElementById('m-info').innerHTML = `Lahir: ${m.birth}<br>Jabatan: ${m.role}<br>Umur: ${m.age} Tahun`;
+                document.getElementById('idModal').style.display = 'flex';
+            };
+            cloud.appendChild(chip);
+        });
+
+        lucide.createIcons();
+    </script>
+</body>
+  </html>
